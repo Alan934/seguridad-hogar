@@ -1,0 +1,118 @@
+mqtt:
+  enabled: true
+  host: mqtt
+  port: 1883
+
+auth:
+  enabled: true
+
+semantic_search:
+  enabled: true
+  model_size: large
+
+face_recognition:
+  enabled: true
+  model_size: large
+
+lpr:
+  enabled: true
+
+classification:
+  bird:
+    enabled: true
+
+objects:
+  track:
+    - person
+  filters:
+    person:
+      min_area: 1000       # Evita que detecte sombras o gatos pequeños como humanos
+      min_score: 0.4       # Detecta humanos incluso al 40% de certeza (con gorro/de noche)
+      threshold: 0.6
+
+cameras:
+  camara_patio:
+    ffmpeg:
+      inputs:
+        - path: '{FRIGATE_RTSP_CAM1}'
+          roles:
+            - detect
+            - record
+    detect:
+      enabled: true
+      width: 960
+      height: 1080
+      fps: 5
+    zones:
+      zona_porton_calle:
+        coordinates: 0.263,0.168,0.331,0.371,0.167,0.433,0.082,0.232
+        loitering_time: 0
+        inertia: 3
+      zona_hacia_chancha:
+        coordinates: 0.322,0.194,0.331,0.371,0.479,0.473,0.47,0.186
+        loitering_time: 0
+        inertia: 3
+      zona_hacia_callejon:
+        coordinates: 0,0.554,0.008,0.993,0.091,0.992,0.046,0.687
+        loitering_time: 0
+        inertia: 3
+      zona_hacia_puerta_trasera:
+        coordinates: 0.997,0.993,0.904,1,0.758,0.762,0.922,0.645,1,0.675
+        loitering_time: 0
+        inertia: 3
+      zona_patio_general:
+        coordinates: 0.018,0.494,0.092,1,0.904,1,0.494,0.503,0.33,0.376
+        loitering_time: 0
+        inertia: 3
+    review:
+      alerts:
+        required_zones:
+          - zona_porton_calle
+          - zona_hacia_chancha
+          - zona_hacia_callejon
+          - zona_hacia_puerta_trasera
+          - zona_patio_general
+    motion:
+      threshold: 22
+      contour_area: 10
+      improve_contrast: true
+  camara_frente:
+    ffmpeg:
+      inputs:
+        - path: '{FRIGATE_RTSP_CAM2}'
+          roles:
+            - detect
+            - record
+    detect:
+      enabled: true
+      width: 960
+      height: 1080
+      fps: 5
+    zones: {}
+  camara_lateral:
+    ffmpeg:
+      inputs:
+        - path: '{FRIGATE_RTSP_CAM3}'
+          roles:
+            - detect
+            - record
+    detect:
+      enabled: true
+      width: 960
+      height: 1080
+      fps: 5
+
+  camara_interior:
+    ffmpeg:
+      inputs:
+        - path: '{FRIGATE_RTSP_CAM4}'
+          roles:
+            - detect
+            - record
+    detect:
+      enabled: true
+      width: 960
+      height: 1080
+      fps: 5
+
+version: 0.17-0

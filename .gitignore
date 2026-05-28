@@ -1,0 +1,23 @@
+# Secretos — NUNCA subir
+.env
+
+# Base de datos y estado de Frigate
+config/backup.db
+config/.timeline
+config/.vacuum
+config/.exports
+config/.jwt_secret
+
+# Modelos de IA (archivos binarios grandes)
+config/model_cache/
+
+# Almacenamiento de grabaciones
+storage/
+
+# Datos internos de Home Assistant
+config_ha/.storage/
+config_ha/.cache/
+config_ha/.HA_VERSION
+
+# Secretos de Home Assistant
+config_ha/secrets.yaml

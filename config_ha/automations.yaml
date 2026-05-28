@@ -1,0 +1,58 @@
+- id: '1779899939325'
+  alias: 'Seguridad: Notificaciones Inteligentes por Rostro'
+  description: Genera un LOG visual sin sobreescribir notificaciones y reacciona al
+    cruce de fronteras de zonas.
+  triggers:
+  - topic: frigate/events
+    trigger: mqtt
+  actions:
+  - condition: template
+    value_template: "{% set data = trigger.payload | from_json %} {% if data.type
+      in ['new', 'update'] and data.after.label == 'person' %}\n  \n  {# Miramos exactamente
+      dónde tiene los pies puestos AHORA vs el milisegundo ANTERIOR #}\n  {% set zonas_antes
+      = data.before.current_zones | default([]) %}\n  {% set zonas_ahora = data.after.current_zones
+      | default([]) %}\n  \n  {% set cara_antes = (data.before.sub_label | string
+      | lower | trim) if data.before.sub_label else '' %}\n  {% set cara_ahora = (data.after.sub_label
+      | string | lower | trim) if data.after.sub_label else '' %}\n  \n  {# COMPUERTA:
+      Solo pasa si cruzó una raya hacia otra zona válida, o si la IA descubrió su
+      rostro #}\n  {% set cambio_zona = (zonas_antes != zonas_ahora) and (zonas_ahora
+      | length > 0) %}\n  {% set cara_descubierta = (cara_antes != cara_ahora) and
+      (cara_ahora != '') %}\n  \n  {% if cambio_zona or cara_descubierta %}\n    \n
+      \   {% set persona = cara_ahora %}\n    {% set familia = ['test1', 'test', 'test2',
+      'test3', 'test4', 'test5', 'test6'] %}\n    \n    {% if persona in familia or 'test1'
+      in persona %}\n      {# REGLA FAMILIA: Suena SOLO si los pies pisan la tierra
+      del portón de la calle #}\n      {{ 'zona_porton_calle' in zonas_ahora }}\n
+      \   {% else %}\n      {# REGLA DESCONOCIDOS: Suena cada vez que cruzan a CUALQUIER
+      zona mapeada #}\n      {{ 'zona_porton_calle' in zonas_ahora or\n         'zona_hacia_puerta_trasera'
+      in zonas_ahora or\n         'zona_hacia_chancha' in zonas_ahora or\n         'zona_hacia_callejon'
+      in zonas_ahora or\n         'zona_patio_general' in zonas_ahora }}\n    {% endif
+      %}\n    \n  {% else %}\n    {{ false }}\n  {% endif %}\n{% else %}\n  {{ false
+      }}\n{% endif %}"
+  - data:
+      title: "{% set data = trigger.payload | from_json %} {% set persona = data.after.sub_label
+        %} {{ \"\U0001F6A8 ¡Familiar cruzando!\" if persona else \"⚠️ ¡Desconocido
+        en movimiento!\" }}"
+      message: "{% set data = trigger.payload | from_json %} {% set persona = data.after.sub_label
+        %} {% set zonas = data.after.current_zones | join(', ') %} {% if persona %}\n
+        \ {{ persona | title }} acaba de cruzar hacia: {{ zonas }}.\n{% else %}\n
+        \ Rastro de desconocido cruzando hacia: {{ zonas }}.\n{% endif %}"
+      data:
+        image: '{% set data = trigger.payload | from_json %} http://testIP:5000/api/events/{{
+          data.after.id }}/snapshot.jpg'
+        ttl: 0
+        priority: high
+        clickAction: '{% set data = trigger.payload | from_json %} http://testIP:5000/api/events/{{
+          data.after.id }}/snapshot.jpg'
+    action: notify.notify
+  mode: parallel
+- id: '1779903834892'
+  alias: 'TEST: Forzar Alerta Frigate'
+  description: ''
+  triggers:
+  - topic: frigate/events
+    trigger: mqtt
+  actions:
+  - data:
+      title: "\U0001F4E1 TEST: Evento MQTT Recibido"
+      message: Frigate envió un paquete. La conexión funciona.
+    action: notify.notify

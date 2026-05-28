@@ -1,0 +1,66 @@
+mqtt:
+  enabled: false
+
+semantic_search:
+  enabled: true
+  model_size: small
+
+face_recognition:
+  enabled: true
+  model_size: small
+
+lpr:
+  enabled: true
+
+classification:
+  bird:
+    enabled: true
+
+cameras:
+  camara_patio:
+    ffmpeg:
+      inputs:
+        - path: '{FRIGATE_RTSP_CAM1}'
+          roles:
+            - detect
+            - record
+    detect:
+      width: 960
+      height: 1080
+      fps: 5
+
+  camara_frente:
+    ffmpeg:
+      inputs:
+        - path: '{FRIGATE_RTSP_CAM2}'
+          roles:
+            - detect
+            - record
+    detect:
+      width: 960
+      height: 1080
+      fps: 5
+
+  camara_lateral:
+    ffmpeg:
+      inputs:
+        - path: '{FRIGATE_RTSP_CAM3}'
+          roles:
+            - detect
+            - record
+    detect:
+      width: 960
+      height: 1080
+      fps: 5
+
+  camara_interior:
+    ffmpeg:
+      inputs:
+        - path: '{FRIGATE_RTSP_CAM4}'
+          roles:
+            - detect
+            - record
+    detect:
+      width: 960
+      height: 1080
+      fps: 5
